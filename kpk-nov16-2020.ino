@@ -190,11 +190,13 @@ void reconnectWifiAndBot() {
     }
 }
 
-String logRecipient = "643117986";
+String logRecipientB = "643117986";
+String logRecipientA = "-525700871";
 void log(String s) {
   Serial.println(s);
   if (withInternet) {
-    bot.sendMessage(logRecipient, s, "");  
+    bot.sendMessage(logRecipientA, s, "");  
+    bot.sendMessage(logRecipientB, s, ""); 
   }
   sdFile = SD.open(sdFilePath, FILE_WRITE);
   if (sdFile) {
@@ -218,16 +220,18 @@ void loop() {
   if (withInternet) {
     if (WiFi.status() != WL_CONNECTED) {
       log("++ disconnected from internet, restarting arduino");
-      digitalWrite(Reset, LOW);
+      NVIC_SystemReset();
+//      digitalWrite(Reset, LOW);
       log("++ this code should never get reached");
-      resetFunc();
+//      resetFunc();
     }
     // also just reset every hour or so
     if (millis() > msUntilRestart) {
        log("++ periodic hourly reset");
-       digitalWrite(Reset, LOW);
+       NVIC_SystemReset();
+//       digitalWrite(Reset, LOW);
        log("++ this code should never get reached");
-       resetFunc();
+//       resetFunc();
     }
   }
   
@@ -251,15 +255,16 @@ void loop() {
   if (millis() > sensor_lasttime + sensor_interval) {
     float humidity = readSensors();
     sensor_lasttime = millis();
-    float minHumidity = 85.0;
-    if (humidity < minHumidity) {
-      digitalWrite(relayPin, HIGH);
-      log("++ humidifier ON (humidity: " + String(humidity) + ")");
-    }
-    else {
-      digitalWrite(relayPin, LOW);
-      log("++ humidifier OFF (humidity: " + String(humidity) + ")");
-    }
+    // commented out as this is just a monitor now
+//    float minHumidity = 85.0;
+//    if (humidity < minHumidity) {
+//      digitalWrite(relayPin, HIGH);
+//      log("++ humidifier ON (humidity: " + String(humidity) + ")");
+//    }
+//    else {
+//      digitalWrite(relayPin, LOW);
+//      log("++ humidifier OFF (humidity: " + String(humidity) + ")");
+//    }
   }
 }
 
@@ -339,8 +344,8 @@ void Bot_EchoMessages() {
     else 
     {
       // unsupported command
-      bot.sendMessage(Sender, "You wrote:", "");       //     
-      bot.sendMessage(Sender, bot.message[i][5], "");  //Echo the unsupported command to the user
+//      bot.sendMessage(Sender, "You wrote:", "");       //     
+//      bot.sendMessage(Sender, bot.message[i][5], "");  //Echo the unsupported command to the user
     }
 
     
